@@ -1,0 +1,127 @@
+{% extends "1001/base.html" %}
+{% block title %}
+	list {{media}}
+{% endblock %}
+{% block body %}
+<link rel="stylesheet" type="text/css" href="/static/notyf.min.css">
+
+	<style type="text/css">
+
+	/*tr:nth-child(even) {background: #CCC}*/
+	</style>
+	<body>
+		<header class="header">
+			{% import 'header_macro.html' as header_macro %}
+			{{ header_macro.header_render('tagger') }}
+		</header>
+		<div class="main">
+			<main>
+
+				<div  class="submenu">
+						{% for tag in last %}
+						<span>
+							<a href="javascript:void(0)" onclick="tagAddInput('{{tag[1]}}')" >{{tag[1]}}</a>
+							<a href="{{ url_for('.get_tag', tag=tag[1]) }}">&#9998;</a>
+							<a href="{{ url_for('.get_files', media=media )}}?tag={{tag[1]}}">&#128270;</a>
+						</span>
+						{% endfor %}
+
+				<div>
+					<input id="newtag" type="input">
+					<button type="button" onclick="tagAdd()">Add</button>
+					<button type="button" onclick="tagDelete()">Delete</button>
+					<button type="button" onclick="checkedall(false)">Clear</button>
+					<button type="button" onclick="checkedall(true)">All</button>
+					<a href="{{ url_for("static", filename="aps.txt") }}">aps.txt</a>
+					<a href="{{ url_for("static", filename="nn.txt") }}">nn.txt</a>
+
+				</div>
+				</div>
+				<br>
+				<div class="table">
+					<table>
+						{% for item in list %}
+							<tr>
+								{%if media == 'archives'%}
+								<td >{{item.set|d('', true)}}</td>
+								{%endif%}
+								<td>{{item.size|humanfriendly}}</td>
+								<td>{{item.mtime|strf2}}</td>
+								<td><input class="item" type="checkbox" name="id" value="{{item.id}}"></td>
+								<td class="ellip2">
+									<a href='{{ url_for(".item", media=media, index=item.id) }}' onmouseover="return overlib('<img src=&quot;{{ url_for("tagger.static", filename=item.thumb_path|d('', true)) }}.jpg&quot; style=&quot;&quot; />');" onmouseout="return nd();javascript:void(0)">{{item.filename}}</a>
+								</td>
+							</tr>
+						{% endfor %}
+					</table>
+				</div>
+			</main>
+		</div>
+    <div style="height:320px; width:100%; clear:both;background: #e8e8e8;background: #f7f7f7;"></div>
+	</body>
+{% endblock %}
+{% block script %}
+<script src="/static/overlib.js" type="text/javascript"></script>
+<script src="/static/notyf.min.js" type="text/javascript"></script>
+
+<script>
+
+function tagAddInput(tagstring){
+	var tag = document.getElementById('newtag');
+	tag.value = ""
+	tag.value = tagstring
+}
+
+function checkedall(checked){
+	var checks = document.getElementsByClassName('item')
+	for (var i = 0, checks; check = checks[i++];) {
+	    check.checked = checked;
+	}
+}
+
+function tagDelete(){
+	var tag = document.getElementById('newtag');
+	var notyf = new Notyf();
+	var checks = document.getElementsByClassName('item')
+	var query = ""
+	for (var i = 0, checks; check = checks[i++];) {
+	    if (check.checked == true){
+	        query += check.name.concat("=",check.value,"&")
+	    }
+	}
+	query += ("tag="+tag.value)
+
+	axios.delete('{{ url_for(".remove_tags", media=media) }}', {params:query} )
+	.then(function (response) {
+		notyf.confirm("Deleted: "+response.statusText);
+		tag.value = ""
+	})
+	.catch(function (error) {
+		notyf.alert(error);
+	});
+};
+
+function tagAdd(){
+	var tag = document.getElementById('newtag');
+	var notyf = new Notyf();
+	var checks = document.getElementsByClassName('item')
+	var query = ""
+	for (var i = 0, checks; check = checks[i++];) {
+	    if (check.checked == true){
+	        query += check.name.concat("=",check.value,"&")
+	    }
+	}
+	query += ("tag="+tag.value)
+
+	axios.post('{{ url_for(".add_tags", media=media) }}', query)
+	.then(function (response) {
+		notyf.confirm("Added: "+response.statusText);
+		tag.value = ""
+	})
+	.catch(function (error) {
+		notyf.alert(error);
+	});
+};
+
+</script>
+{% endblock %}

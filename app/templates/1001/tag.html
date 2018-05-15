@@ -1,0 +1,66 @@
+{% extends "1001/base.html" %}
+{% block title %}
+	tags
+{% endblock %}
+{% block body %}
+	<link rel="stylesheet" type="text/css" href="/static/notyf.min.css">
+	<body>
+		<header class="header">
+			{% import 'header_macro.html' as header_macro %}
+			{{ header_macro.header_render('tagger') }}
+		</header>
+		<div class="main2">
+			<div id="details">
+				<span>{{item.id}}</span> / <span>{{item.lastupdated|strf2}}</span>
+				<input id="tag" type="input" name="tag" value="{{item.tag}}" placeholder="tag">
+				<input id="collection" type="input" name="collection" value="{{item.collection|d('', true)}}" placeholder="collection">
+				<span >&#x1f4a2;</span>
+				<input id="aliasof" type="input" name="tag" value="{{item.aliasof|d('', true)}}" placeholder="aliasof">
+				<button type="button" onclick="update()">Update</button>
+				<span id="res"></span>
+			</div>
+			<div class="search">
+				<a href='{{ url_for(".get_files", media="archives") }}?tag={{item.tag}}'>files</a>
+			</div>
+			<div class="relateds">
+			<button type="button" onclick="delete_tag()">Delete Tag</button>
+				
+			</div>
+		</div>
+		<!-- <footer class="footer">Footer</footer> -->
+	</body>
+{% endblock %}
+{% block script %}
+	<script src="/static/notyf.min.js" type="text/javascript"></script>
+
+	<script>
+	function update(){
+		var tag = document.getElementById('tag');
+		var collection = document.getElementById('collection');
+		var aliasof = document.getElementById('aliasof');
+		var notyf = new Notyf();
+		axios.put('{{ url_for(".set_tag", tag=item.tag) }}', 'tag='+tag.value+'&collection='+collection.value+'&aliasof='+aliasof.value)
+		.then(function (response) {
+			notyf.confirm("Updated: "+response.statusText);
+
+		})
+		.catch(function (error) {
+			notyf.alert(error);
+		});
+	};
+	function delete_tag(){
+		var tag = document.getElementById('tag');
+		var notyf = new Notyf();
+		if (confirm('delete_?')){
+			axios.delete('{{ url_for(".delete_tag", tag=item.tag) }}')
+			.then(function (response) {
+				notyf.confirm("Updated: "+response.statusText);
+
+			})
+			.catch(function (error) {
+				notyf.alert(error);
+			});
+		}
+	};
+	</script>
+{% endblock %}

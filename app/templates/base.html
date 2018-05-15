@@ -1,0 +1,202 @@
+<!doctype html>
+<title>{% block title %}{% endblock %}</title>
+<!-- <link rel=stylesheet type=text/css href="/static/style.css"> -->
+<script src="/static/axios.min.js"></script>
+<script src="/static/sprintf.min.js"></script>
+<style>
+
+html{
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+	
+font-family: IBM Plex Sans, arial, sans-serif;
+font-size: 12px;
+background: #ececec;
+
+}
+a{
+color: #1464a0;
+text-decoration: none;
+}
+a:visited{
+color: #fb0000;
+text-decoration: none;
+}
+header a{
+font-weight: bold;
+text-decoration: none;
+}
+table.bf {
+font-family: IBM Plex Sans, arial, sans-serif;
+font-size: 12px;
+border-collapse: collapse;
+float: left;
+margin-right: 2em;
+/*width: 100%;*/
+}
+table.bf a{
+text-decoration: none;
+}
+table.bf th{
+text-align: left;
+}
+/*table.bf tr{
+border-bottom: 1px solid #d6d6d6;
+}*/
+table.bf td{
+padding-right: 16px;
+}
+.bf tr:hover{
+background:rgba(255,215,0,.2);
+}
+.codes a{
+text-decoration: none;
+color: #1464a0;
+}
+.codes span{
+color: grey;
+}
+.done{
+background-color: lightgreen;
+}
+.mark1{
+background-color: yellow;
+}
+.active{
+font-weight: bold;
+color: #fb0000;
+/*font-size: 14px;*/
+}
+a.active_sort {
+color: #fb0000;
+}
+/*.dropbtn {
+background-color: #4CAF50;
+color: white;
+padding: 16px;
+font-size: 16px;
+border: none;
+}*/
+.dropdown {
+position: relative;
+display: inline-block;
+}
+.dropdown-content {
+display: none;
+position: absolute;
+/*background-color: #f9f9f9;*/
+/*min-width: 160px;*/
+box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.8);
+z-index: 1;
+}
+/*.dropdown-content a {
+color: black;
+padding: 12px 16px;
+text-decoration: none;
+display: block;
+}*/
+/*.dropdown-content a:hover {background-color: #f1f1f1}*/
+.dropdown:hover .dropdown-content {
+display: block;
+}
+.dropdown:hover .dropbtn {
+/*background-color: #3e8e41;*/
+}
+ul {
+list-style-type: none;
+margin: 0;
+padding: 0;
+}
+
+li {
+/*border-bottom: 1px solid #ccc;*/
+}
+body {
+display: flex;
+min-height: 100vh;
+flex-direction: column;
+/*margin:1.5em;*/
+}
+header{
+padding-bottom: 0.75em;
+border-bottom: 1px solid #d0d0d0;
+}
+.main {
+display: flex;
+flex: 1;
+padding-top: 0.75em;
+}
+main {
+flex: 1;
+}
+nav {
+/* 12em is the width of the columns */
+flex: 0 0 15em;
+margin-right: 3em;
+margin-top: -1em;
+}
+ul.controller{
+margin-top: 0.75em;
+	
+}
+ul.controller li {
+display: inline-block;
+margin-right: 1em;
+}
+ul.submenu{
+border-bottom: 1px solid #dedede;
+}
+ul.submenu li {
+display: inline-block;
+/*margin-right: 0.5em;*/
+padding-bottom: 0.75em;
+}
+ul.submenu li::after {
+content: "/";
+}
+
+</style>
+{% block body %}{% endblock %}
+{% block script %}{% endblock %}

@@ -1,0 +1,59 @@
+/tag		GET
+/tag/1		GET,POST,PUT,DELETE
+
+GET		/tags			get_tags
+?tag:like=a
+POST	/tags			create_tag
+GET		/tags/{}		get_tag
+PUT		/tags/{}		set_tag
+DELETE	/tags/{}		delete_tag
+
+GET 	/{media}				get_files
+?tag:and=a,b,c&sort=-set,mtime&filename:like=a&view=list&per_page=15&page=2&set:like=a&table=archive
+tag=[]
+sort
+filename
+set
+view
+per_page
+page
+table
+
+GET		/{media}/untaggeds?sort=-mtime	get_untaggeds
+GET		/{media}/nosets					get_nosets
+GET		/{media}/recents				get_recents
+
+
+GET		/{media}/{id}					get_file
+PUT		/{media}/{id}					set_file
+DELETE 	/{media}/{id}					delete_file
+GET		/{media}/{id}/next				next_file
+GET		/{media}/{id}/prev				prev_file
+GET		/{media}/{id}/open				open_file
+GET		/{media}/{id}/tags				get_file_tags
+POST	/{media}/{id}/tags				add_tag
+DELETE 	/{media}/{id}/tags/{id} 		remove_tag
+
+
+
+
+
+
+
+
+
+
+
+
+
+400	Bad Request -- Your request sucks.
+401	Unauthorized -- Your API key is wrong.
+403	Forbidden -- The kitten requested is hidden for administrators only.
+404	Not Found -- The specified kitten could not be found.
+405	Method Not Allowed -- You tried to access a kitten with an invalid method.
+406	Not Acceptable -- You requested a format that isn't json.
+410	Gone -- The kitten requested has been removed from our servers.
+418	I'm a teapot.
+429	Too Many Requests -- You're requesting too many kittens! Slow down!
+500	Internal Server Error -- We had a problem with our server. Try again later.
+503	Service Unavailable -- We're temporarily offline for maintenance. Please try again later.

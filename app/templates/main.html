@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}
+	home
+{% endblock %}
+{% block body %}
+	<body>
+		<header class="header">
+			{% import 'header_macro.html' as header_macro %}
+			{{ header_macro.header_render('home') }}
+		</header>
+	</body>
+{% endblock %}

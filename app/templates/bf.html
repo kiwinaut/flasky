@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}
+  bf
+{% endblock %}
+{% block body %}
+  <body>
+    <header class="header">
+      {% import 'header_macro.html' as header_macro %}
+      {{ header_macro.header_render('bf') }}
+    </header>
+    <div class="main">
+      <nav class="codes">
+        {% set ns = namespace(up=None) %}
+        {% for d in counter %}
+          {% if d['code'][0] != ns.up %}
+            <br>
+            <b> {{ d['code'][0].upper() }}</b>
+            <br>
+            {% set ns.up = d['code'][0] %}
+          {% endif %}
+          <a href="/bf/filter/{{d['code']}}">{{ d['code']}}</a>
+          <span >{{ d['count'] }}</span>
+          
+        {% endfor %}
+      </nav>
+      <main>
+        <table class="bf">
+          <tr>
+            <th>id</th>
+            <th>
+              {%if order %}
+              <a href="?o=0">filename &#9660;</a>
+            {% else %}
+              <a href="?o=1">filename &#9650;</a>
+              {%endif%}
+            </th>
+            <th></th>
+            <th></th>
+            <th></th>
+          </tr>
+          {% for a in all %}
+            <tr id="{{a.doc_id}}">
+              <td>{{a.doc_id}}</td>
+              <td>{{ a['filename'] }}</td>
+              <td>
+                {%if a.get('star', False) %}
+                <a href="javascript:void(0)" onclick="star('{{a.doc_id}}', true)">&#9733;</a>
+              {% else %}
+                <a href="javascript:void(0)" onclick="star('{{a.doc_id}}', false)">&#9734;</a>
+                {%endif%}
+              </td>
+              <td>
+                <form action="/bf/open/{{a.doc_id}}" method="POST">
+                  <!-- <input type="hidden" name="param1" value="val" /> -->
+                  <a href="javascript:void(0)" onclick="opentar('{{a.doc_id}}')">open</a>
+                </td>
+                <td ><a href="javascript:void(0)" onclick="deletetar('{{a.doc_id}}')">delete</a></td>
+              </tr>
+            {% endfor %}
+          </table>
+        </main>
+      </div>
+      <!-- <footer class="footer">Footer</footer> -->
+    </body>
+  {% endblock %}
+  {% block script %}
+    <script>
+    function opentar(code){
+    axios.post('/bf/open/' + code, {
+    firstName: 'Fred'
+    })
+    .then(function (response) {
+    var td = document.getElementById(code);
+    td.className += " opened";
+    console.log(td);
+    console.log(response);
+    })
+    .catch(function (error) {
+    console.log(error);
+    });
+    }
+    function star(code, on){
+    if (on){
+    u = 'star=1'
+    }else{
+    u = 'star=0'
+    }
+    axios.post('/bf/star/'+code, u)
+    .then(function (response) {
+    console.log(response.data);
+    var tr = document.getElementById(code);
+    })
+    .catch(function (error) {
+    console.log(error);
+    });
+    }
+    function deletetar(code){
+    if (confirm('delete_?')){
+    axios.delete('/bf/delete/' + code)
+    .then(function (response) {
+    var td = document.getElementById(code);
+    td.parentNode.removeChild(td);
+    })
+    .catch(function (error) {
+    console.log(error);
+    });
+    }
+    }
+    </script>
+  {% endblock %}

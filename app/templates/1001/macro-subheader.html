@@ -1,0 +1,14 @@
+{% macro render(media, args) %}
+<ul class="submenu">
+	<li>
+		<a href='{{url_for(".get_files", media="archives")}}'>Archives</a>
+		
+	</li>
+	<li>
+		<a href='{{url_for(".get_files", media="videos")}}'>Videos</a>
+	</li>
+	<li>
+		<a href='{{url_for(".get_tags")}}'>Tags</a>
+	</li>
+</ul>
+{% endmacro %}

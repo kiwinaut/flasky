@@ -1,0 +1,11 @@
+<div class="inforect">
+	Existing: 
+</div>
+{% for file in files  %}
+	<div id="file.m_tag{{loop.index}}" class="tagrect existrect">
+		<a class="tag" href="{{ url_for('.get_files', media=media )}}?tag={{tag}}">{{file.m_tag}}</a>
+		<a href="{{ url_for('.get_tag', tag=tag) }}">&#9998;</a>
+		<a href="javascript:void(0)" onclick="tagDelete('{{file.m_tag}}','tag{{loop.index}}')">X</a>
+	</div>
+{% endfor %}
+

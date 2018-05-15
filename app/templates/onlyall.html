@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}
+  onlyall
+{% endblock %}
+{% block body %}
+  <body>
+    <header class="header">
+      {% import 'header_macro.html' as header_macro %}
+      {{ header_macro.header_render('onlyall') }}
+    </header>
+    <div class="main">
+      <main>
+        <div>
+          <form  action="" id="filterform">
+            <select name="model">
+              <option label=" "></option>
+              {% set model = args.imd.get('model', None) %}
+              {% for i in model_select %}
+                <option value="{{i.model}}" {% if i.model == model %}selected{% endif %}>{{i.model}}</option>
+              {% endfor %}
+            </select>
+            <select name="group">
+              <option label=" "></option>
+              {% set group = args.imd.get('group', None) %}
+              {% for i in set_select %}
+                <option value="{{i.group}}" {% if i.group == group %}selected{% endif %}>{{i.group}}</option>
+              {% endfor %}
+            </select>
+            <select name="year">
+              <option label=" "></option>
+              {% set year = args.imd.get('year', '') %}
+              {% for i in range(2007,2019) %}
+                <option value="{{i}}" {% if i|string == year %}selected{% endif %}>{{i}}</option>
+              {% endfor %}
+            </select>
+            <select name="month">
+              <option label=" "></option>
+              {% set month = args.imd.get('month', '') %}
+              {% for i in range(1,13) %}
+                <option value="{{i}}" {% if i|string == month %}selected{% endif %}>{{i}}</option>
+              {% endfor %}
+              <input type="hidden" name="sort" value="{{args['sort']}}">
+              <input type="hidden" name="order" value="{{args['order']}}">
+              <input type="hidden" name="view" value="1">
+            </select>
+            <input type="submit" value="Submit">
+          </form>
+          <a href="/onlyall/dups">duplicates</a>
+        </div>
+        <br>
+        <div>
+          <table class="bf">
+            <th></th>
+            <th>
+              {%if args['sort'] == 'model'%}
+              <a class="active_sort" href="?{{args.encode(order=args.norder())}}">model{% if args['order'] == 'asc'%}&#9650;{%else%}&#9660;{%endif%}</a>
+              {%else%}
+              <a href="?{{args.encode(sort='model')}}">model</a>
+              {%endif%}
+            </th>
+            <th>
+              {%if args['sort'] == 'group'%}
+              <a class="active_sort" href="?{{args.encode(order=args.norder())}}">group{% if args['order'] == 'asc'%}&#9650;{%else%}&#9660;{%endif%}</a>
+              {%else%}
+              <a href="?{{args.encode(sort='group')}}">group</a>
+              {%endif%}
+            </th>
+            <th>
+              {%if args['sort'] == 'date'%}
+              <a class="active_sort" href="?{{args.encode(order=args.norder())}}">date{% if args['order'] == 'asc'%}&#9650;{%else%}&#9660;{%endif%}</a>
+              {%else%}
+              <a href="?{{args.encode(sort='date')}}">date</a>
+              {%endif%}
+            </th>
+            <th>count</th>
+            <th>
+              {%if args['sort'] == 'pindex'%}
+              <a class="active_sort" href="?{{args.encode(order=args.norder())}}">pindex{% if args['order'] == 'asc'%}&#9650;{%else%}&#9660;{%endif%}</a>
+              {%else%}
+              <a href="?{{args.encode(sort='pindex')}}">pindex</a>
+              {%endif%}
+            </th>
+            <th></th>
+            {% for row in q %}
+              <tr id="{{row.id}}" class="{{row.status}}">
+                <td></td>
+                <td>
+                  <div class="dropdown">
+                    <a class="dropbtn">{{ row.model }}</a>
+                    <div class="dropdown-content">
+                      <img src="/onlyall/i/{{row.thumb}}" />
+                    </div>
+                  </div>
+                </td>
+                <td>{{ row.group }}</td>
+                <td>{{ row.date | strf }}</td>
+                <td>{{ row.count }}</td>
+                <td>{{ row.pindex }}</td>
+                <td>
+                  <form>
+                    <input type="radio" name="status" value="None" onclick="setStatus(this, '{{row.id}}')" {% if row.status == 'none' %}checked{% endif %}> None
+                    <input type="radio" name="status" value="done" onclick="setStatus(this, '{{row.id}}')" {% if row.status == 'done' %}checked{% endif %}> Done
+                    <input type="radio" name="status" value="mark1" onclick="setStatus(this, '{{row.id}}')" {% if row.status == 'mark1' %}checked{% endif %}> Mark 1
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </table>
+        </div>
+      </main>
+    </div>
+    <!-- <footer class="footer">Footer</footer> -->
+  </body>
+{% endblock %}
+{% block script %}
+  <script>
+  function setStatus(radio, code){
+  var tr = document.getElementById(code);
+  axios.put('/onlyall/'+ code, 'status='+radio.value)
+  .then(function (response) {
+  console.log(response.data)
+  tr.classList = "";
+  tr.classList.add(radio.value);
+  })
+  .catch(function (error) {
+  });
+  };
+  // function updateURLParameter(url, param, paramVal){
+  //     var newAdditionalURL = "";
+  //     var tempArray = url.split("?");
+  //     var baseURL = tempArray[0];
+  //     var additionalURL = tempArray[1];
+  //     var temp = "";
+  //     if (additionalURL) {
+  //         tempArray = additionalURL.split("&");
+  //         for (var i=0; i<tempArray.length; i++){
+  //             if(tempArray[i].split('=')[0] != param){
+  //                 newAdditionalURL += temp + tempArray[i];
+  //                 temp = "&";
+  //             }
+  //         }
+  //     }
+  //     var rows_txt = temp + "" + param + "=" + paramVal;
+  //     return baseURL + "?" + newAdditionalURL + rows_txt;
+  // };
+  </script>
+{% endblock %}

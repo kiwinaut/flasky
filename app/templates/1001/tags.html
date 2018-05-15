@@ -1,0 +1,45 @@
+{% extends "1001/base.html" %}
+{% block title %}
+	tags
+{% endblock %}
+{% block body %}
+	<style type="text/css">
+		.tag{
+			margin-right: 1em;
+		}
+	</style>
+	<body>
+		<header class="header">
+			{% import 'header_macro.html' as header_macro %}
+			{{ header_macro.header_render('tagger') }}
+		</header>
+		<div class="main">
+			<main>
+				<div class="submenu">
+				{% import '1001/macro-subheader.html' as subheader_macro %}
+				{{ subheader_macro.render(media) }}
+				</div>
+				<div class="table">
+				{% set ns = namespace(up=None) %}
+				{% for d in q %}
+					{% if d.tag[0] != ns.up %}
+						<b class="upper"> {{ d.tag[0].upper() }}</b>
+						{% set ns.up = d.tag[0] %}
+					{% endif %}
+					<a  href='{{ url_for(".get_files", media="archives") }}?tag={{d.tag}}'>{{d.tag}}</a>
+					{% if d.aliasof %}
+					<span >&#128313;</span>
+					{% endif %}
+
+					<a class="tag" href="{{url_for('.get_tag', tag=d.tag)}}">	&#9998;</a>
+				{% endfor %}
+				</div>
+			</main>
+		</div>
+		<!-- <footer class="footer">Footer</footer> -->
+	</body>
+{% endblock %}
+{% block script %}
+	<script>
+	</script>
+{% endblock %}

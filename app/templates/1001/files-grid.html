@@ -1,0 +1,149 @@
+{% extends "1001/base.html" %}
+{% block title %}
+	list {{media}}
+{% endblock %}
+{% block body %}
+	<style type="text/css">
+	.ellip1{
+	text-overflow: ellipsis;
+	width: 150px;
+	/*white-space: nowrap;*/
+	/*overflow: hidden;*/
+	}
+	.ellip22{
+	text-overflow: ellipsis;
+	width: 650px;
+	/*white-space: nowrap;*/
+	/*overflow: hidden;*/
+	}
+	table{
+	font-family: IBM Plex Sans, arial, sans-serif;
+	font-size: 12px;
+	border-collapse: collapse;
+	float: left;
+	margin-right: 2em;
+	width: 100%;
+	/*border-top: 1px solid #AAA;*/
+	}
+	th{
+		text-align: left;
+	}
+	tr{
+		border-bottom: 1px solid #AAA;
+	}
+	td{
+		/*border-right: 1px solid #AAA;*/
+		padding-right: 0.5em;
+	}
+	tr:nth-child(even) {background: #CCC}
+
+  .grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content:center;
+    align-items:center;
+    /*flex-direction: row;*/
+  }
+  .cell {
+    text-align: left;
+    margin: 1rem;
+    width:300px;
+  }
+  .cell img{
+  	display: block;
+	margin-left: auto;
+    margin-right: auto;
+  }
+  }
+
+	</style>
+	<body>
+		<header class="header">
+			{% import 'header_macro.html' as header_macro %}
+			{{ header_macro.header_render('tagger') }}
+		</header>
+		<div class="main">
+			<main>
+				<div>
+					{% import '1001/macro-subheader.html' as subheader_macro %}
+					{{ subheader_macro.render(media) }}
+
+					<ul class="controller">
+						<li>
+							{%if args['view'] == 'list'%}
+							<a class="active_sort" href="javascript:void(0)">list</a>
+							{%else%}
+							<a href="?{{args.encode(view='list')}}">list</a>
+							{%endif%}
+							{%if args['view'] == 'grid'%}
+							<a class="active_sort" href="javascript:void(0)">grid</a>
+							{%else%}
+							<a href="?{{args.encode(view='grid')}}">grid</a>
+							{%endif%}
+						</li>
+						<li>
+							{%if media == 'archives'%}
+							<a class="active_sort" href="javascript:void(0)">archives</a>
+							{%else%}
+							<a href='{{url_for(".get_files", media="archives")}}?{{args.encode()}}'>archives</a>
+							{%endif%}
+							{%if media == 'videos'%}
+							<a class="active_sort" href="javascript:void(0)">videos</a>
+							{%else%}
+							<a href='{{url_for(".get_files", media="videos")}}?{{args.encode()}}'>videos</a>
+							{%endif%}
+						</li>
+						<li>
+							<a href=''>&#8676;</a>
+							<a href='?{{args.encode(page=(args["page"]|int-1))}}'>prev</a>
+							<span>{{args['page']}}</span>
+							<a href='?{{args.encode(page=(args["page"]|int+1))}}'>next</a>
+							<a href=''>&#8677;</a>
+						</li>
+						<li>
+							<form  action="" id="filterform">
+								<input type="input" name="set" value="">
+								<input type="input" name="filename" value="">
+								<input type="hidden" name="sort" value="{{args['sort']}}">
+								<input type="hidden" name="order" value="{{args['order']}}">
+								<input type="hidden" name="view" value="{{args['view']}}">
+								<input type="submit" name="search" value="search">
+							</form>
+						</li>
+						<li>
+							<a href="{{url_for('.groupedit', media=media)}}?{{args.encode()}}">Multi Edit</a>
+						</li>
+						<li>
+							<a href="{{url_for('.get_files', media=media)}}?{{args.encode(notag=true)}}">notags</a>
+						</li>
+					</ul>
+				</div>
+						<div class="grid">
+						{% for item in list %}
+							<div class="cell">
+								<a href='{{ url_for(".item", media=media, index=item.id) }}'>
+								<div>
+									<img src="{{ url_for('tagger.static', filename=item.thumb_path|d('', true)) }}.jpg">
+								</div>
+								<div>{{item.set|d('', true)}}</div>
+								<div>{{item.filename}}</div>
+								</a>
+							</div>
+						{% endfor %}
+						</div>
+			</main>
+		</div>
+	</body>
+{% endblock %}
+{% block script %}
+<script src="/static/overlib.js" type="text/javascript"></script>
+	<script>
+	function open(){
+	axios.post('{{ url_for(".get_files", media=media) }}')
+	.then(function (response) {
+	})
+	.catch(function (error) {
+	});
+	}
+	</script>
+{% endblock %}

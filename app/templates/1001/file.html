@@ -1,0 +1,440 @@
+{% extends "1001/base.html" %}
+{% block title %}
+	item {{item.id}}
+{% endblock %}
+
+{% block body %}
+<link rel="stylesheet" type="text/css" href="/static/notyf.min.css">
+	<style type="text/css">
+		.divider{
+			display: flex;
+			margin: 1em;
+		}
+		.divider>div{
+			margin-right: 1em;
+		}
+		.divider table{
+			border-spacing: 0;
+		}
+		.divider table tr{
+			padding-bottom: : .4em;
+		}
+		.hastag{
+			background: #f2f2f2;
+			/*border-radius: 3px;*/
+			/*border: 1px solid #d0d0d0;*/
+			padding: 0 3px 0 3px;
+			font-style: bold;
+		}
+		.small{
+			flex: 1 0 0;
+		}
+		.small *{
+			margin-bottom: .4em;
+
+		}
+		.big{
+			flex: 4 0 0;
+		}
+		.big table{
+			max-width: 550px;
+
+		}
+
+		/* Style the Image Used to Trigger the Modal */
+#myImg {
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#myImg:hover {opacity: 0.7;}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+}
+
+/* Modal Content (Image) */
+.modal-content {
+    margin: auto;
+    display: block;
+    width: 100%;
+    max-width: 1024px;
+}
+
+/* Caption of Modal Image (Image Text) - Same Width as the Image */
+#caption {
+    margin: auto;
+    display: block;
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+    color: #ccc;
+    padding: 10px 0;
+    height: 150px;
+}
+
+/* Add Animation - Zoom in the Modal */
+.modal-content, #caption { 
+    animation-name: zoom;
+    animation-duration: 0.2s;
+}
+
+@keyframes zoom {
+    from {transform:scale(0)} 
+    to {transform:scale(1)}
+}
+
+/* The Close Button */
+.close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* 100% Image Width on Smaller Screens */
+@media only screen and (max-width: 700px){
+    .modal-content {
+        width: 100%;
+    }
+}
+.tags{
+	margin-top:1em;
+/*	max-width: 700px;
+*/}
+.tagheader{
+	padding: 2px;
+	background: #f2f2f2;
+}
+.inforect{
+	display: inline-block;
+}
+.tagrect{
+	display: inline-block;
+	background: #dae6ea;
+	margin:.4em .4em 0 0;
+	padding: .2em .4em;
+	border-radius: 2px;
+	/*font-weight: bold;*/
+}
+.delete{
+	background: #f9d5cf;
+	border-radius: 3px;
+	padding: 1em;
+
+}
+.tools{
+	background: lightblue;
+	border-radius: 3px;
+	padding: 1em;
+
+}
+table.info{
+	border-spacing:.4em;
+}
+table.info td{
+	white-space: normal;
+	overflow: auto;
+
+}
+.existrect{
+	background: lightgreen;
+}
+	</style>
+	<body>
+		<header class="header">
+			{% import 'header_macro.html' as header_macro %}
+			{{ header_macro.header_render('tagger') }}
+		</header>
+		<div class="main">
+			<main>
+				<div class="submenu">
+					{% import '1001/macro-subheader.html' as subheader_macro %}
+					{{ subheader_macro.render(media) }}
+				</div>
+				<div class="divider">
+					<div class="small">
+						<div class="thumb">
+							
+							<img src='{{ url_for("tagger.static", filename=item.thumb_path|d("", true)) }}.jpg'>
+						</div>
+						<div class="tools">
+							<button type="button" onclick="open_item('default')">Open</button>
+							<button type="button" onclick="open_item('mcomix')">mcomix</button>
+							<button type="button" onclick="open_item('folder')">Open Folder</button>
+							<a href='{{ url_for(".item_prev", media=media, index=index) }}'>Prev</a>
+							<a href='{{ url_for(".item_next", media=media, index=index) }}'>Next</a>
+							<a href='{{ url_for(".archive_infolist", index=index) }}'>infolist</a>				
+						</div>
+						<div class="delete">
+							<button type="button" onclick="delete_item('entry')">Delete Entry</button>
+							<button type="button" onclick="delete_item('all')">Delete All</button>
+						</div>
+
+					<div>
+				</div>
+					</div>
+					<div class="big">
+						<div class="tagheader">
+						Info:
+						</div>
+
+						<div>
+						<table class="info">
+							<tr>
+								<td>Id:</td>
+								<td>{{item.id}}</td>
+							</tr>
+							<tr>
+								<td>Filename:</td>
+								<td>{{item.filename}}</td>
+							</tr>
+							<tr>
+								<td>Filepath:</td>
+								<td>{{item.filepath}}</td>
+							</tr>
+							<tr>
+								<td>Size:</td>
+								<td>{{item.size|humanfriendly}}</td>
+							</tr>
+							<tr>
+								<td>Mtime:</td>
+								<td>{{item.mtime|strf2}}</td>
+							</tr>
+							<tr>
+								<td>Thumb:</td>
+								<td><input id="thumb" type="input" name="thumb" value=""></td>
+							</tr>
+							{%if media == 'videos'%}
+							<tr>
+								<td>Screenshot:</td>
+								<td><input id="screen" type="checkbox" name="screen"></td>
+							</tr>
+							{%endif%}
+							{%if media == 'archives'%}
+							<tr>
+								<td>Set:</td>
+								<td><input id="set" type="input" name="set" value="{{item.set|d('', true)}}"></td>
+							</tr>
+							{%endif%}
+							<tr>
+								<td>Note:</td>
+								<td><input id="note" type="input" name="note" value="{{item.note|d('', true)}}"></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><button type="button" onclick="update()">Save</button></td>
+							</tr>
+						</table>
+					</div>
+
+				<div class="tags">
+					<div class="tagheader">
+						Tags:
+					</div>
+					<div class="suggest">
+						<div class="inforect">
+							Last 20:
+						</div>
+						{% for tag in last %}
+						<div class="tagrect">
+							<a href="javascript:void(0)" onclick="tagAddFromQuick('{{tag[1]}}')" >{{tag[1]|title}}</a> 
+							<a href="{{ url_for('.get_tag', tag=tag[1]) }}">&#9998;</a>
+							<a href="{{ url_for('.get_files', media=media )}}?tag={{tag[1]}}">&#128270;</a>
+						</div>
+						{% endfor %}
+						<div class="inforect">
+							<a href="{{ url_for("static", filename="aps.txt") }}">aps.txt</a>
+							<a href="{{ url_for("static", filename="nn.txt") }}">nn.txt</a>
+						</div>
+					</div>
+					<div style="margin: .5em">
+						<input id="newtag" type="input">
+						<button type="button" onclick="tagAdd()">Add</button>
+					</div>
+					<div class="exists"  id="tags">
+							{% if item.m_tag %}
+								<div class="inforect">
+									Existing: 
+								</div>
+								{% for tag in  item.m_tag.split(',')  %}
+									<div id="tag{{loop.index}}" class="tagrect existrect">
+										<a class="tag" href="{{ url_for('.get_files', media=media )}}?tag={{tag}}">{{tag|title}}</a>
+										<a href="{{ url_for('.get_tag', tag=tag) }}">&#9998;</a>
+										<a href="javascript:void(0)" onclick="tagDelete('{{tag}}','tag{{loop.index}}')">X</a>
+									</div>
+								{% endfor %}
+							{% endif %}
+					</div>
+				</div>
+				</div>
+
+				</div>
+				<div class="divider">
+					{%if media == 'videos'%}
+					<div>
+					<!-- Trigger the Modal -->
+						<img id="modalimg" src='{{ url_for("tagger.static", filename=item.thumb_path|d("", true)) }}_s.jpg' width="300" height="200">
+
+						<!-- The Modal -->
+						<div id="myModal" class="modal">
+
+						  <!-- The Close Button -->
+						  <span class="close">&times;</span>
+
+						  <!-- Modal Content (The Image) -->
+						  <img class="modal-content" id="img01">
+
+						  <!-- Modal Caption (Image Text) -->
+						  <div id="caption"></div>
+					  </div>
+					  {%endif%}
+					</div>
+				</div>
+			</main>
+		</div>
+		<!-- <footer class="footer">Footer</footer> -->
+	</body>
+{% endblock %}
+{% block script %}
+<script src="/static/notyf.min.js" type="text/javascript"></script>
+<script>
+function open_item(app){
+		axios.post('{{ url_for(".item_open", media=media, index=index) }}',"path="+encodeURIComponent("{{item.filepath|safe}}")+"&app="+app)
+		.then(function (response) {
+		})
+		.catch(function (error) {
+		});
+};
+
+function delete_item(scope){
+	if (confirm('delete_? {{item.filename}}')){
+		var notyf = new Notyf();
+		axios.delete('{{ url_for(".item_delete", media=media, index=index) }}', {params:{scope:scope}})
+		.then(function (response) {
+			notyf.confirm("Deleted: "+response.statusText);
+		})
+		.catch(function (error) {
+			notyf.alert(error);
+		});
+	}
+};
+
+function update(){
+	var args = ""
+	var note = document.getElementById('note');
+	args += note.name.concat("=",note.value,"&")
+	{%if media == 'archives'%}
+	var set = document.getElementById('set');
+	args += set.name.concat("=",set.value,"&")
+	{%endif%}
+	{%if media == 'videos'%}
+	var set = document.getElementById('screen');
+	args += set.name.concat("=",set.value,"&")
+	{%endif%}
+	var thumb = document.getElementById('thumb');
+	args += thumb.name.concat("=",thumb.value)
+	var notyf = new Notyf();
+	axios.put('{{ url_for(".item_update", media=media, index=index) }}', args)
+	.then(function (response) {
+		notyf.confirm("Updated: "+response.statusText);
+	})
+	.catch(function (error) {
+		notyf.alert(error);
+	});
+};
+
+function tagAddFromQuick(tag){
+	var notyf = new Notyf();
+	axios.post('{{ url_for(".add_tag", media=media, index=index) }}', 'tag='+tag)
+	.then(function (response) {
+		table = document.getElementById('tags')
+		table.innerHTML = response.data
+		notyf.confirm("Added: "+response.statusText);
+	})
+	.catch(function (error) {
+		notyf.alert(error);
+	});
+};
+
+function tagAdd(){
+	var tag = document.getElementById('newtag');
+	var notyf = new Notyf();
+	axios.post('{{ url_for(".add_tag", media=media, index=index) }}', 'tag='+tag.value)
+	.then(function (response) {
+		table = document.getElementById('tags')
+		table.innerHTML = response.data
+		notyf.confirm("Added: "+response.statusText);
+		tag.value = ""
+	})
+	.catch(function (error) {
+			notyf.alert(error);
+	});
+};
+
+function tagDelete(tag, tagid){
+		// event.preventDefault();
+	var url = '{{ url_for(".remove_tag", media=media, index=index, tag="") }}'
+	var notyf = new Notyf();
+	if (confirm('delete_?')){
+		axios.delete(url+tag)
+		.then(function (response) {
+			table = document.getElementById('tags')
+			table.innerHTML = response.data
+			// tr = document.getElementById(tagid)
+			// tr.parentNode.removeChild(tr);
+			notyf.confirm("Deleted: "+response.statusText);
+		})
+		.catch(function (error) {
+			notyf.alert(error);
+		});
+	}
+};
+
+	{%if media == 'videos'%}
+
+	// Get the modal
+	var modal = document.getElementById('myModal');
+
+	// Get the image and insert it inside the modal - use its "alt" text as a caption
+	var img = document.getElementById('modalimg');
+	var modalImg = document.getElementById("img01");
+	var captionText = document.getElementById("caption");
+	img.onclick = function(){
+	    modal.style.display = "block";
+	    modalImg.src = this.src;
+	    captionText.innerHTML = this.alt;
+	}
+
+	// Get the <span> element that closes the modal
+	var span = document.getElementsByClassName("close")[0];
+
+	// When the user clicks on <span> (x), close the modal
+	span.onclick = function() { 
+	  modal.style.display = "none";
+	}
+	{% endif %}
+</script>
+{% endblock %}

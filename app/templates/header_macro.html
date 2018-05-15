@@ -1,0 +1,6 @@
+{% macro header_render(active) %}
+<a {% if active == 'bf' %} class="active" {% endif %} href="/bf">bf</a> /
+<a {% if active == 'heidy' %} class="active" {% endif %} href="/heidy">heidy</a> /
+<a {% if active == 'onlyall' %} class="active" {% endif %} href="/onlyall?model=Charlotte+H">onlyall</a> /
+<a {% if active == 'tagger' %} class="active" {% endif %} href="/tagger">tagger</a> /
+{% endmacro %}
