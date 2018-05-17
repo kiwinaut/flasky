@@ -75,15 +75,15 @@
 					<table>
 						<tr>
 							<th></th>
-							<th>
 								{%if media == 'archives'%}
+							<th>
 								{%if args['sort'] == 'set'%}
 								<a class="active_sort" href="?{{args.encode(order=args.norder())}}">set{% if args['order'] == 'asc'%}&#9650;{%else%}&#9660;{%endif%}</a>
 								{%else%}
 								<a href="?{{args.encode(sort='set')}}">set</a>
 								{%endif%}
-								{%endif%}
 							</th>
+								{%endif%}
 							<th>
 								{%if args['sort'] == 'size'%}
 								<a class="active_sort" href="?{{args.encode(order=args.norder())}}">size{% if args['order'] == 'asc'%}&#9650;{%else%}&#9660;{%endif%}</a>
@@ -121,7 +121,11 @@
 								{%endif%}
 								<td class="size">{{item.size|humanfriendly}}</td>
 								<td>{{item.mtime|strf2}}</td>
-								<td><a href="javascript:void(0)" onclick='open("{{ url_for(".item_open", media=media, index=item.id) }}")'>&#128194;</a></td>
+								<td><a href="javascript:void(0)" onclick='open_item("{{item.id}}","{{item.filepath|safe}}")'>&#128194;</a>
+									{%if item.note %}
+									&#128278;
+									{%endif%}
+								</td>
 								<td class="filename">
 									<a href='{{ url_for(".item", media=media, index=item.id) }}' onmouseover="return overlib('<img src=&quot;{{ url_for("tagger.static", filename=item.thumb_path|d('', true)) }}.jpg&quot; style=&quot;&quot; />');" onmouseout="return nd();javascript:void(0)">{{item.filename}}</a>
 								</td>
@@ -138,12 +142,12 @@
 {% block script %}
 <script src="/static/overlib.js" type="text/javascript"></script>
 	<script>
-	function open(){
-	axios.post('{{ url_for(".get_files", media=media) }}')
-	.then(function (response) {
-	})
-	.catch(function (error) {
-	});
-	}
-	</script>
+	function open_item(index,filepath){
+			axios.post('{{ url_for(".get_files", media=media) }}/'+index+'/open',"path="+encodeURIComponent(filepath)+"&app="+"{%if media=='archives'%}mcomix{%else%}default{%endif%}")
+			.then(function (response) {
+			})
+			.catch(function (error) {
+			});
+};	
+</script>
 {% endblock %}

@@ -182,15 +182,17 @@ table.info td{
 						</div>
 						<div class="tools">
 							<button type="button" onclick="open_item('default')">Open</button>
-							<button type="button" onclick="open_item('mcomix')">mcomix</button>
-							<button type="button" onclick="open_item('folder')">Open Folder</button>
+							{%if media == 'archives'%}
+							<button type="button" onclick="open_item('mcomix')">&#128053; mcomix</button>
+							<a href='{{ url_for(".archive_infolist", index=index) }}'>infolist</a>				
+							{%endif%}
+							<button type="button" onclick="open_item('folder')">&#128451; Open Folder</button>
 							<a href='{{ url_for(".item_prev", media=media, index=index) }}'>Prev</a>
 							<a href='{{ url_for(".item_next", media=media, index=index) }}'>Next</a>
-							<a href='{{ url_for(".archive_infolist", index=index) }}'>infolist</a>				
 						</div>
 						<div class="delete">
 							<button type="button" onclick="delete_item('entry')">Delete Entry</button>
-							<button type="button" onclick="delete_item('all')">Delete All</button>
+							<button type="button" onclick="delete_item('all')">&#128465; Delete All</button>
 						</div>
 
 					<div>
@@ -283,7 +285,7 @@ table.info td{
 									<div id="tag{{loop.index}}" class="tagrect existrect">
 										<a class="tag" href="{{ url_for('.get_files', media=media )}}?tag={{tag}}">{{tag|title}}</a>
 										<a href="{{ url_for('.get_tag', tag=tag) }}">&#9998;</a>
-										<a href="javascript:void(0)" onclick="tagDelete('{{tag}}','tag{{loop.index}}')">X</a>
+										<a href="javascript:void(0)" onclick="tagDelete('{{tag}}','tag{{loop.index}}')">&#10060;</a>
 									</div>
 								{% endfor %}
 							{% endif %}
@@ -351,15 +353,20 @@ function update(){
 	args += set.name.concat("=",set.value,"&")
 	{%endif%}
 	{%if media == 'videos'%}
-	var set = document.getElementById('screen');
-	args += set.name.concat("=",set.value,"&")
+	var sc = document.getElementById('screen');
+	args += sc.name.concat("=",sc.checked,"&")
 	{%endif%}
 	var thumb = document.getElementById('thumb');
 	args += thumb.name.concat("=",thumb.value)
 	var notyf = new Notyf();
+	console.log(args)
 	axios.put('{{ url_for(".item_update", media=media, index=index) }}', args)
 	.then(function (response) {
 		notyf.confirm("Updated: "+response.statusText);
+		{%if media == 'videos'%}
+		sc.checked = false;
+		{%endif%}
+
 	})
 	.catch(function (error) {
 		notyf.alert(error);

@@ -28,10 +28,10 @@
 					{% endif %}
 					<a  href='{{ url_for(".get_files", media="archives") }}?tag={{d.tag}}'>{{d.tag}}</a>
 					{% if d.aliasof %}
-					<span >&#128313;</span>
+					<span >&#128206;</span>
 					{% endif %}
 
-					<a class="tag" href="{{url_for('.get_tag', tag=d.tag)}}">	&#9998;</a>
+					<a class="tag" href="{{url_for('.get_tag', tag=d.tag)}}">&#128221;</a>
 				{% endfor %}
 				</div>
 			</main>

@@ -318,6 +318,23 @@ class Query:
         q = db.execute_sql('SELECT * FROM(SELECT * FROM Tags ORDER BY Tags.lastupdated DESC LIMIT 0,20) ORDER BY tag ASC')
         return q
 
+    def get_related_tags(tag):
+        jstring = 'archivetags'
+        #TODO
+        qu = '''
+            select tags.tag from tags
+            inner join {j} on tags.id == {j}.tag_id 
+            where {j}.file_id in
+            (
+            select {j}.file_id from tags 
+            inner join {j} on tags.id == {j}.tag_id 
+            where tag == ?
+            )
+            group by tags.id order by tags.tag
+        '''.format(j=jstring)
+        q = db.execute_sql(qu, (tag,))
+        return q
+
     def get_tag(tag):
         q = Tags.get(tag=tag)
         return q
@@ -367,7 +384,6 @@ class Query:
         return Table, j
 
     def update2(media, index, set, note, thumb, screen):
-        print("SCREEN",screen)
         if media == 'archives':
             Table = Archives
             # j = ArchiveTags
@@ -376,7 +392,7 @@ class Query:
             Table = Videos
             # j = VideoTags
             r = Table.update(note=note).where(Table.id==index).execute()
-            if screen == 'on':
+            if screen == 'true':
                 item=Table.get(id=index)
                 clip.new_screenshot(item)
         #TODO thumb
@@ -554,6 +570,6 @@ class Query:
                         
 
             sq = sq.paginate(int(args.get('page', default='1')), int(args.get('per_page', default='40'))).objects()
-            print(sq.sql())
+            # print(sq.sql())
             return sq
 

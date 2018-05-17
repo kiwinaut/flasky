@@ -7,6 +7,7 @@ import urllib
 from .models import Query
 import subprocess as sp
 from config import CONFIG
+from .info import get_info
 # from werkzeug.wrappers import Response
 
 class Args:
@@ -62,9 +63,11 @@ def get_tags():
 @tagger.route("/tags/<tag>", methods=["GET"])
 def get_tag(tag):
     item = Query.get_tag(tag)
+    relateds = Query.get_related_tags(tag)
     return render_template(
         '1001/tag.html',
-        item=item
+        item=item,
+        relateds=relateds
         )
 
 @tagger.route("/tags/<tag>", methods=["PUT"])
@@ -148,14 +151,15 @@ def item(media, index):
 
 @tagger.route("/archives/<int:index>/infolist", methods=["GET"])
 def archive_infolist(index):
-    try:
+    # try:
         q = Query.get_item('archives', index)
-        fpath = CONFIG['mount']+'/'+q.filepath
-        import zipfile
-        z = zipfile.ZipFile(fpath)
-        return str(z.namelist())
-    except:
-        abort(500)
+        # fpath = CONFIG['mount']+'/'+q.filepath
+        # import zipfile
+        # z = zipfile.ZipFile(fpath)
+        # return str(z.namelist())
+        return render_template('1001/info.html', info=get_info(q.filepath))
+    # except:
+    #     abort(500)
 
 @tagger.route("/<media>/<int:index>", methods=["PUT"])
 def item_update(media, index):

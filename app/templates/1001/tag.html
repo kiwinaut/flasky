@@ -26,6 +26,20 @@
 			<button type="button" onclick="delete_tag()">Delete Tag</button>
 				
 			</div>
+			<div>
+				<div class="table">
+				{% set ns = namespace(up=None) %}
+				{% for r in relateds %}
+					{% if r[0][0] != ns.up %}
+						<b class="upper"> {{ r[0][0].upper() }}</b>
+						{% set ns.up = r[0][0] %}
+					{% endif %}
+					<a  href='{{ url_for(".get_files", media="archives") }}?tag={{r[0]}}'>{{r[0]}}</a>
+
+					<a class="tag" href="{{url_for('.get_tag', tag=r[0])}}">&#128221;</a>
+				{% endfor %}
+				</div>			
+			</div>
 		</div>
 		<!-- <footer class="footer">Footer</footer> -->
 	</body>

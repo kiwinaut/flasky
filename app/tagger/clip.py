@@ -13,7 +13,7 @@ def rethumb(item, media, value):
         blob = clp.extract_frame(value, THUMB_SIZE[0])
     elif media == 'archives':
         t = Thumbnailer(size=THUMB_SIZE)
-        blob = t.get_blob(fpath, index=int(value))
+        blob = t.get_blob(fpath, infoname=value.strip())
     dest = '%s/%s/%s.jpg' % (CONFIG['mount'], 'persistent/1001/thumbs', item.sha)
     with open (dest, 'wb') as fp:
         fp.write(blob)

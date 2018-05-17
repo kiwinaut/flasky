@@ -83,7 +83,7 @@
             <th></th>
             {% for row in q %}
               <tr id="{{row.id}}" class="{{row.status}}">
-                <td></td>
+                <td>{{loop.index}}</td>
                 <td>
                   <div class="dropdown">
                     <a class="dropbtn">{{ row.model }}</a>
