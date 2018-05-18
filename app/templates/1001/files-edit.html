@@ -30,6 +30,8 @@
 					<input id="newtag" type="input">
 					<button type="button" onclick="tagAdd()">Add</button>
 					<button type="button" onclick="tagDelete()">Delete</button>
+					<button type="button" onclick="rethumb('rethumb')">ReThumb</button>
+					{%if media == 'videos'%}<button type="button" onclick="rethumb('rescreen')">ReScreen</button>{%endif%}
 					<button type="button" onclick="checkedall(false)">Clear</button>
 					<button type="button" onclick="checkedall(true)">All</button>
 					<a href="{{ url_for("static", filename="aps.txt") }}">aps.txt</a>
@@ -78,6 +80,26 @@ function checkedall(checked){
 	    check.checked = checked;
 	}
 }
+function rethumb(action){
+	var notyf = new Notyf();
+	var checks = document.getElementsByClassName('item')
+	var query = ""
+	for (var i = 0, checks; check = checks[i++];) {
+	    if (check.checked == true){
+	        query += check.name.concat("=",check.value,"&")
+	    }
+	}
+	query += (action+"="+'true')
+
+	axios.post('{{ url_for(".add_tags", media=media) }}', query)
+	.then(function (response) {
+		notyf.confirm(action+": "+response.statusText);
+	})
+	.catch(function (error) {
+		notyf.alert(error);
+	});
+	
+};
 
 function tagDelete(){
 	var tag = document.getElementById('newtag');

@@ -2,15 +2,16 @@ import subprocess as sp
 from os.path import splitext
 from config import CONFIG
 
+v = ('ffprobe',)
 apps = {
-    # '.mkv': Mime.VIDEO,
-    # '.mp4': Mime.VIDEO,
-    # '.mpg': Mime.VIDEO,
-    # '.mpeg': Mime.VIDEO,
-    # '.mov': Mime.VIDEO,
-    # '.mov': Mime.VIDEO,
-    # '.avi': Mime.VIDEO,
-    # '.wmv': Mime.VIDEO,
+    '.mkv': v,
+    '.mp4': v,
+    '.mpg': v,
+    '.mpeg': v,
+    '.mov': v,
+    '.mov': v,
+    '.avi': v,
+    '.wmv': v,
     # '.lib.tar': Mime.LIBIMAGE,
     '.tar': ('tar', '-tvf'),
     # '.tar.gz': Mime.ARCHIVE,
@@ -28,7 +29,7 @@ def get_info(filepath):
 	_, ext = splitext(fp)
 	cmd = apps.get(ext)
 	if cmd:
-		c = sp.run([*cmd, fp], stdout = sp.PIPE)
-		return c.stdout
+		c = sp.run([*cmd, fp], stdout = sp.PIPE, stderr = sp.PIPE, encoding='utf-8')
+		return c
 	else:
 		return 'no info cmd'

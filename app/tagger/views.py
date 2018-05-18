@@ -3,7 +3,8 @@ from flask import Blueprint, render_template, abort, request, redirect, url_for
 # from tinydb import TinyDB
 # from .models import Todo, fn, SQL
 from werkzeug.datastructures import MultiDict
-import urllib
+from werkzeug.urls import url_encode
+# import urllib
 from .models import Query
 import subprocess as sp
 from config import CONFIG
@@ -41,7 +42,7 @@ class Args:
         copy = self.imd.copy()
         for i in kwargs:
             copy[i] = kwargs[i]
-        return urllib.parse.urlencode(copy)
+        return url_encode(copy)
 
 
 tagger = Blueprint('tagger', __name__, static_folder='%s/persistent/1001/thumbs'%CONFIG['mount'], static_url_path='/s')
@@ -57,6 +58,14 @@ def get_tags():
     q = Query.get_tags()
     return render_template(
         '1001/tags.html',
+        q=q
+        )
+
+@tagger.route("/tags/bycount/<media>", methods=["GET"])
+def get_tags_bycount(media):
+    q = Query.get_tags_bycount(media)
+    return render_template(
+        '1001/tagsbycount.html',
         q=q
         )
 
@@ -101,9 +110,16 @@ def get_files(media):
 @tagger.route("/<media>", methods=["POST"])
 def add_tags(media):
     try:
-        tag = request.form['tag']
         ids = request.form.getlist('id', type=int)
-        Query.add_tag_links(media, ids, tag)
+        tag = request.form.get('tag')
+        rethumb = request.form.get('rethumb')
+        rescreen = request.form.get('rescreen')
+        if tag:
+            Query.add_tag_links(media, ids, tag)
+        elif rethumb:
+            Query.rethumb(media, ids)
+        elif rescreen:
+            Query.rescreen(media, ids)
         return ""
     except Exception as e:
         print(e)
@@ -149,15 +165,19 @@ def item(media, index):
     except:
         abort(500)
 
-@tagger.route("/archives/<int:index>/infolist", methods=["GET"])
-def archive_infolist(index):
+@tagger.route("/<media>/<int:index>/infolist", methods=["GET"])
+def archive_infolist(media, index):
     # try:
-        q = Query.get_item('archives', index)
+        q = Query.get_item(media, index)
         # fpath = CONFIG['mount']+'/'+q.filepath
         # import zipfile
         # z = zipfile.ZipFile(fpath)
         # return str(z.namelist())
-        return render_template('1001/info.html', info=get_info(q.filepath))
+        if media == 'videos':
+            i = get_info(q.filepath).stderr
+        else:
+            i = get_info(q.filepath).stdout
+        return render_template('1001/info.html', info=i)
     # except:
     #     abort(500)
 

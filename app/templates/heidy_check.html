@@ -19,18 +19,15 @@
           {% for chunk in all %}
             <table class="bf">
               {% for a in chunk %}
-                <tr id="{{a.doc_id}}" class="{{a['status']}}">
+                <tr id="{{a.doc_id}}" class="{{a['status']}}" onmouseover="return overlib('<img src=&quot;/heidy/imgs/{{folder}}/{{a['file']}}&quot; />');" onmouseout="return nd();javascript:void(0)">
+                  <td>{{ a.get('set', a['vid']) }}</td>
                   <td>
-                    <div class="dropdown">
-                      <a class="dropbtn">{{ a.get('set', a['vid']) }}</a>
-                      <div class="dropdown-content">
-                        <img src="/heidy/imgs/{{folder}}/{{a['file']}}" />
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <input  type="checkbox" onclick="status(this, '{{a.doc_id}}')" {% if a['status'] %} checked {% endif %}>
-                    <a href="javascript:void(0)" onclick="mark1('{{a.doc_id}}', '{{a['status']}}')">&#128153;</a>
+                    <a href="javascript:void(0)" onclick="mark1('{{a.doc_id}}', '')">&#x2610;</a>
+                    <a href="javascript:void(0)" onclick="mark1('{{a.doc_id}}', 'done')">&#9745;</a>
+                    <a href="javascript:void(0)" onclick="mark1('{{a.doc_id}}', 'mark1')">&#9873;</a>
+                    <a href="javascript:void(0)" onclick="mark1('{{a.doc_id}}', 'mark2')">&#x2690;</a>
+                    <!-- <input  type="checkbox" onclick="status(this, '{{a.doc_id}}')" {% if a['status'] %} checked {% endif %}> -->
+                    <!-- <a href="javascript:void(0)" onclick="mark1('{{a.doc_id}}', '{{a['status']}}')">&#128153;</a> -->
                   </td>
                 </tr>
               {% endfor %}
@@ -44,26 +41,38 @@
   </body>
 {% endblock %}
 {% block script %}
+<script src="/static/overlib.js" type="text/javascript"></script>
+
   <script>
-  function status(cb, code){
+  function mark1(code,status){
     var tr = document.getElementById(code);
-    if (cb.checked){
-      axios.put('/heidy/{% if folder == 'vids' %}vids/{% endif %}' + code, 'status=done')
-      .then(function (response) {
-        tr.classList.add("done");
-      })
-      .catch(function (error) {
-        cb.checked = false
-      });
-      }else{
-        axios.put('/heidy/{% if folder == 'vids' %}vids/{% endif %}' + code, 'status=')
-        .then(function (response) {
-          tr.classList.remove("done");
-        })
-        .catch(function (error) {
-          cb.checked = true
-      });
-    }
+    axios.put('/heidy/{% if folder == 'vids' %}vids/{% endif %}' + code, 'status='+status)
+    .then(function (response) {
+      tr.className = "";
+      tr.classList.add(status);
+    })
+    .catch(function (error) {
+    });
   }
+  // function status(cb, code){
+  //   var tr = document.getElementById(code);
+  //   if (cb.checked){
+  //     axios.put('/heidy/{% if folder == 'vids' %}vids/{% endif %}' + code, 'status=done')
+  //     .then(function (response) {
+  //       tr.classList.add("done");
+  //     })
+  //     .catch(function (error) {
+  //       cb.checked = false
+  //     });
+  //     }else{
+  //       axios.put('/heidy/{% if folder == 'vids' %}vids/{% endif %}' + code, 'status=')
+  //       .then(function (response) {
+  //         tr.classList.remove("done");
+  //       })
+  //       .catch(function (error) {
+  //         cb.checked = true
+  //     });
+  //   }
+  // }
   </script>
 {% endblock %}

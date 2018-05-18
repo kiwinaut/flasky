@@ -184,10 +184,10 @@ table.info td{
 							<button type="button" onclick="open_item('default')">Open</button>
 							{%if media == 'archives'%}
 							<button type="button" onclick="open_item('mcomix')">&#128053; mcomix</button>
-							<a href='{{ url_for(".archive_infolist", index=index) }}'>infolist</a>				
 							{%endif%}
 							<button type="button" onclick="open_item('folder')">&#128451; Open Folder</button>
-							<a href='{{ url_for(".item_prev", media=media, index=index) }}'>Prev</a>
+							<a href='{{ url_for(".archive_infolist", media=media, index=index) }}'>Info</a>				
+							<a href='{{ url_for(".item_prev",  media=media, index=index) }}'>Prev</a>
 							<a href='{{ url_for(".item_next", media=media, index=index) }}'>Next</a>
 						</div>
 						<div class="delete">

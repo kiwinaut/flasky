@@ -312,6 +312,15 @@ class Query:
         q = Tags.select().order_by(Tags.tag)
         return q
 
+    def get_tags_bycount(media):
+        if media == 'archives':
+            j = ArchiveTags
+        elif media == 'videos':
+            j = VideoTags
+
+        q = Tags.select(Tags.tag,fn.COUNT(j.file).alias('m_count')).join(j).group_by(Tags.tag).order_by(SQL('m_count desc'))
+        return q
+
     def last_tags():
         # q = Tags.select().order_by(Tags.lastupdated.desc()).limit(20)
         # q = Tags.select().where(Tags.id << SQL('(SELECT "t2"."pindex" FROM "todo" as "t2" WHERE "t2"."group" == "{}" GROUP BY "t2"."pindex" HAVING count("t2"."pindex") > 1)'.format(gp)))
@@ -411,6 +420,19 @@ class Query:
             .where(Table.id==index)\
             .objects()
         return sq
+
+    def rethumb(media, ids):
+        Table, j = Query.tables(media)
+        sq = Table.select(Table.filepath, Table.sha).where(Table.id << ids)
+        for q in sq:
+            clip.rethumb(q, media)
+
+    def rescreen(media, ids):
+        sq = Videos.select(Videos.filepath, Videos.sha).where(Videos.id << ids)
+        for q in sq:
+            clip.new_screenshot(q)
+
+        
 
     def add_tag_links(media, ids, tag):
         tag, is_tag_created = Tags.get_or_create(tag=tag.strip().lower())
@@ -546,16 +568,27 @@ class Query:
                 sq = sq.join(j, JOIN.LEFT_OUTER)\
                     .join(Tags, JOIN.LEFT_OUTER)
                     
-                tag_list = args['tag'].strip().split(',')
-                exp = []
-                for t in tag_list:
-                    exp.append(Tags.tag==t.strip().lower())
+                # tag_list = args['tag'].strip().split(',')
+                tag_list = args.getlist('tag')
+                if len(tag_list) == 1:
+                    sq = sq.where(Tags.tag==tag_list[0].strip().lower())
+                else:
+                    sq = sq.where(Tags.tag << tag_list)\
+                    .group_by(Table.id).having(fn.COUNT(Table.id) >= len(tag_list))
+                # exp = []
+                # for t in tag_list:
+                #     exp.append(Tags.tag==t.strip().lower())
 
-                sq = sq.where(*exp)\
-                .group_by(Table.id)
+                # sq = sq.where(*exp)\
             elif 'notag' in args:
                 sq = sq.join(j, JOIN.LEFT_OUTER)\
                 .where(j.file_id >> None)
+
+            if 'set' in args and args['set'] != '' and media == 'archives':
+                sq = sq.where(Table.set** '%{}%'.format(args['set']))
+
+            if 'filename' in args and args['filename'] != '' and media == 'archives':
+                sq = sq.where(Table.filename** '%{}%'.format(args['filename']))
 
 
             # if yearmonth:
@@ -570,6 +603,6 @@ class Query:
                         
 
             sq = sq.paginate(int(args.get('page', default='1')), int(args.get('per_page', default='40'))).objects()
-            # print(sq.sql())
+            print(sq.sql())
             return sq
 

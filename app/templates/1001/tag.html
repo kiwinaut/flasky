@@ -34,7 +34,7 @@
 						<b class="upper"> {{ r[0][0].upper() }}</b>
 						{% set ns.up = r[0][0] %}
 					{% endif %}
-					<a  href='{{ url_for(".get_files", media="archives") }}?tag={{r[0]}}'>{{r[0]}}</a>
+					<a  href='{{ url_for(".get_files", media="archives") }}?tag={{item.tag}}&tag={{r[0]}}'>{{r[0]}}</a>
 
 					<a class="tag" href="{{url_for('.get_tag', tag=r[0])}}">&#128221;</a>
 				{% endfor %}

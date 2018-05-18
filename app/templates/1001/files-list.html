@@ -50,16 +50,18 @@
 						</li>
 						<li>
 							<form  action="" id="filterform">
-								{%if args['tag'] %}
-								<input type="input" name="tag" value="{{','.join(args.getlist('tag'))}}">
-								{%else%}
-								<input type="input" name="tag" value="" placeholder="tags">
+								{%if media=='archives'%}
+								<input type="input" name="set" value="{{args.imd.get('set')|d('', true)}}" placeholder="set like">
 								{%endif%}
-
-								<input type="input" name="filename" value="" placeholder="filename like">
+								<input type="input" name="filename" value="{{args.imd.get('filename')|d('', true)}}" placeholder="filename like">
 								<input type="hidden" name="sort" value="{{args['sort']}}">
 								<input type="hidden" name="order" value="{{args['order']}}">
 								<input type="hidden" name="view" value="{{args['view']}}">
+								{%if args.imd.getlist('tag')%}
+									{%for t in args.imd.getlist('tag') %}
+										<input type="hidden" name="tag" value="{{t}}">
+									{%endfor%}
+								{%endif%}
 								<input type="submit" name="search" value="search">
 							</form>
 						</li>

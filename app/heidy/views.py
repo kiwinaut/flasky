@@ -30,7 +30,7 @@ def list():
             yield l[i:i + n]
 
     db.close()
-    return render_template('heidy_check.html', all=chunks(all,30), folder='sets')
+    return render_template('heidy_check.html', all=chunks(all,40), folder='sets')
 
 @heidy.route("/<int:index>", methods=["PUT"])
 def update(index):
