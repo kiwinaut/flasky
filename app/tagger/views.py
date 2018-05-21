@@ -95,10 +95,13 @@ def delete_tag(tag):
 @tagger.route("/<media>", methods=["GET"])
 def get_files(media):
     q = Query.get_files( request.args, media)
-    if request.args.get('view','list') == 'list':
+    view = request.args.get('view','list')
+    if view == 'list':
         temp = '1001/files-list.html'
-    else:
+    elif view == 'grid':
         temp = '1001/files-grid.html'
+    else:
+        temp = '1001/files-macy.html'
     return render_template(
         temp,
         list=q,

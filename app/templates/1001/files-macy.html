@@ -55,61 +55,38 @@
 	margin-left: auto;
     margin-right: auto;
   }
+  
+  ul.col{
+  	/*display: -webkit-flex;*/
+  	display: flex;
+  	flex-wrap: wrap;
+  	/*flex-direction: column;*/
+  	/*flex-flow: row wrap;*/
+  	list-style: none;
   }
 
-/* Center website */
-.main {
-    max-width: 1000px;
-    margin: auto;
-}
-
-  h1 {
-    font-size: 50px;
-    word-break: break-all;
-}
-
-.row {
-    margin: 8px -16px;
-}
-
-/* Add padding BETWEEN each column (if you want) */
-.row,
-.row > .column {
-    padding: 8px;
-}
-
-/* Create four equal columns that floats next to each other */
-.column {
-    float: left;
-    /*width: 25%;*/
-}
-
-/* Clear floats after rows */ 
-.row:after {
-    content: "";
-    display: table;
-    clear: both;
-}
-
 /* Content */
-.content {
-    background-color: #f1f1f1;
-    padding: 10px;
+li.content {
+    /*background-color: #f1f1f1;*/
+    /*display: inline-block;*/
+    /*padding: 2px;*/
+    flex:1;
+    /*-webkit-box-flex:auto;*/
+    /*width: 60px;*/
+    /*margin:2px;*/
+    /*height: 5%;	*/
 }
+/*li.content {
+    width: 90px;
+    height: 90px;	
+}
+*/
+/*img.fixed{
+    width: 160px;
+    height: auto;	
+}
+*/
 
-/* Responsive layout - makes a two column-layout instead of four columns */
-@media screen and (max-width: 900px) {
-    .column {
-        width: 50%;
-    }
-}
-
-/* Responsive layout - makes the two columns stack on top of each other instead of next to each other */
-@media screen and (max-width: 600px) {
-    .column {
-        width: 100%;
-    }
-}
 
 	</style>
 	<body>
@@ -178,32 +155,55 @@
 						</li>
 					</ul>
 				</div>
-<div class="row">
+<ul id="macy-container">
 {% for item in list %}
-  <div class="column">
-    <div class="content">
+    <li class="child-element">
 		<a href='{{ url_for(".item", media=media, index=item.id) }}'>
-	      <img src="{{ url_for('tagger.static', filename=item.sha|d('', true)) }}.jpg"  >
+	      <img class="fixed" src="{{ url_for('tagger.static', filename='')}}f/{{item.sha|d('', true)}}.jpg"  >
       </a>
-      <div><a href="javascript:void(0)" onclick='open_item("{{item.id}}","{{item.filepath|safe}}")'>&#128194;</a>{%if item.note %}&#128278;{%endif%}{{item.set|d('', true)}}</div>
-      <div>{{item.filename}}</div>
-    </div>
-  </div>
+    </li>
 {% endfor %}
-</div>			
+</ul>
 			</main>
 		</div>
 	</body>
 {% endblock %}
 {% block script %}
 <script src="/static/overlib.js" type="text/javascript"></script>
+<script src="/static/macy.js" type="text/javascript"></script>
 	<script>
-	function open_item(index,filepath){
+        var masonry = new Macy({
+            container: '#macy-container',
+            trueOrder: false,
+            waitForImages: false,
+            useOwnImageLoader: false,
+            debug: false,
+            mobileFirst: true,
+            columns: 8,
+            margin: 0,
+            // breakAt: {
+            //     1200: 10,
+            //     940: 8,
+            //     520: 6,
+            //     400: 4
+            // }
+        });	
+
+        function open_item(index,filepath){
 			axios.post('{{ url_for(".get_files", media=media) }}/'+index+'/open',"path="+encodeURIComponent(filepath)+"&app="+"{%if media=='archives'%}mcomix{%else%}default{%endif%}")
 			.then(function (response) {
 			})
 			.catch(function (error) {
 			});
-};	
+		};
+// element.addEventListener('scroll', function(event)
+// {
+//     var element = event.target;
+//     if (element.scrollHeight - element.scrollTop === element.clientHeight)
+//     {
+//         console.log('scrolled');
+//     }
+// });
+
 </script>
 {% endblock %}

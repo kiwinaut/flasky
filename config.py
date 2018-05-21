@@ -11,18 +11,18 @@ class ConfigManager(object):
 
     def __init__(self):
         self.defaults = {
-            '1001.path': '%s/persistent/1001/1001.db' % MOUNT,
+            '1001.path': '%s/persistent/1001/1001_v2.db' % MOUNT,
             'mount': MOUNT,
         }
         self.config = {}
         self.options = {}
         # self.arguments = []
 
-    def index_parse(self):
-        parser = argparse.ArgumentParser(description='terminal indexer', prog='vindexer')
-        parser.add_argument('--findmax', action="store_false", help="Dont Find Max CTime")
+    def parse(self):
+        parser = argparse.ArgumentParser(description='flasky all in one', prog='flasky')
+        parser.add_argument('-d', '--debug', action="store_true", help="Debug")
         args = parser.parse_args()
-        self.options['findmax'] = args.findmax
+        self.options['debug'] = args.debug
 
     # def parse(self):
     #     parser = argparse.ArgumentParser(description='vip server', prog='vip')

@@ -9,21 +9,23 @@ db = SqliteDatabase(CONFIG['1001.path'])
 
 
 
+__version__ = '1.1.0'
+
+
+
 class BaseModel(Model):
     class Meta:
         database = db
 
 class Files(BaseModel):
     filename = CharField()
-    filepath = CharField()
+    filepath = CharField(unique=True)
     sha = CharField(unique=True)
     size = IntegerField()
     rating = IntegerField(default=0)
     visited = IntegerField(default=0)
     ctime = DateTimeField()
     mtime = DateTimeField()
-    # thumb = BlobField(null=True)
-    thumb_path = CharField(null=True)
     note = CharField(null=True)
         
     class Meta:
@@ -32,11 +34,7 @@ class Files(BaseModel):
         )
 
 
-class Libs(Files):
-    pass
-
 class Videos(Files):
-    screen = BlobField(null=True)
     duration = IntegerField(null=True)
 
 
@@ -45,217 +43,33 @@ class Archives(Files):
     count = IntegerField(null=True)
 
 
-    # @classmethod
-    # def group_date_info(cls):
-    #     '''SELECT strftime('%Y', mtime), strftime('%m', mtime), count(*) FROM Files
-    #     GROUP BY strftime('%m %Y', mtime)
-    #     order by mtime desc;
-    #     WHERE timestamp >= strftime('%s', '2012-12-25 00:00:00') 
-    #     year    month   count
-    #     '''
-    #     pass
-
-    # @classmethod
-    # def get_general(cls, where_, order, index):
-    #     print(index)
-    #     sq = Files.select(
-    #         Files.id,
-    #         Files.filename,
-    #         Files.filepath,
-    #         Files.mime,
-    #         Files.count,
-    #         Files.size,
-    #         Files.mtime,
-    #         Files.thumb,
-    #         Files.note,
-    #         Files.set,
-    #         fn.GROUP_CONCAT(Names.name).alias('m_name'),
-    #         fn.GROUP_CONCAT(Tags.tag).alias('m_tag'),
-    #         Groups.group.alias('m_group')
-    #     )
-    #     sq = sq.join(Groups, JOIN.LEFT_OUTER)\
-    #         .switch(Files)\
-    #         .join(FileNames, JOIN.LEFT_OUTER)\
-    #         .join(Names, JOIN.LEFT_OUTER)\
-    #         .switch(Files)\
-    #         .join(FileTags, JOIN.LEFT_OUTER)\
-    #         .join(Tags, JOIN.LEFT_OUTER)
-    #     if where_:
-    #         sq = sq.where(where_)
-    #     sq = sq.group_by(Files.id)\
-    #         .order_by(order)\
-    #         .paginate(index, PAGINATE_LIMIT)\
-    #         .naive()
-    #     return sq
-
-    # @classmethod
-    # def to_json(self):
-    #     tagged_dict = {}
-    #     sq = Files.select(
-    #         Files.sha,
-    #         Files.note,
-    #         Files.set,
-    #         Names.name.alias('m_name'),
-    #         Tags.tag.alias('m_tag'),
-    #         Groups.group.alias('m_group')
-    #     )
-    #     sq = sq.join(Groups, JOIN.LEFT_OUTER)\
-    #         .switch(Files)\
-    #         .join(FileNames, JOIN.LEFT_OUTER)\
-    #         .join(Names, JOIN.LEFT_OUTER)\
-    #         .switch(Files)\
-    #         .join(FileTags, JOIN.LEFT_OUTER)\
-    #         .join(Tags, JOIN.LEFT_OUTER)
-    #     # if where_:
-    #     #     sq = sq.where(where_)
-    #     # sq = sq.group_by(Files.id)\
-    #     sq = sq.order_by(Files.mtime)\
-    #         .naive()
-    #         # .paginate(index, PAGINATE_LIMIT)\
-
-    #     for q in sq:
-    #         tag_list = []
-    #         tag_list.append(q.set)
-    #         if q.m_name:
-    #             tag_list.append(q.m_name)
-    #         if q.m_tag:
-    #             tag_list.append(q.m_tag)
-    #         if q.m_group:
-    #             tag_list.append(q.m_group)
-    #         if len(tag_list) >= 2:
-
-    #             tagged_dict[q.sha] = tag_list
-
-    #     print(tagged_dict)
-    #     with open('tagged.json', 'w') as fp:
-    #         json.dump(tagged_dict, fp)
-
-    # @classmethod
-    # def get_general3(cls, expressions, index, order_exp, filter_=None, extra=None):
-    #     sq = Files.select(
-    #         Files.id,
-    #         Files.filename,
-    #         Files.filepath,
-    #         Files.mime,
-    #         Files.count,
-    #         Files.size,
-    #         Files.mtime,
-    #         Files.thumb,
-    #         Files.note,
-    #         Files.set,
-    #         fn.GROUP_CONCAT(Names.name).alias('m_name'),
-    #         fn.GROUP_CONCAT(Tags.tag).alias('m_tag'),
-    #         Groups.group.alias('m_group')
-    #     )
-    #     sq = sq.join(Groups, JOIN.LEFT_OUTER)\
-    #         .switch(Files)\
-    #         .join(FileNames, JOIN.LEFT_OUTER)\
-    #         .join(Names, JOIN.LEFT_OUTER)\
-    #         .switch(Files)\
-    #         .join(FileTags, JOIN.LEFT_OUTER)\
-    #         .join(Tags, JOIN.LEFT_OUTER)
-    #     if len(expressions):
-    #         sq = sq.where(*expressions)
-    #     if filter_:
-    #         sq = sq.where(filter_)
-    #     if extra:
-    #         sq = sq.where(extra)
-    #     sq = sq.group_by(Files.id)\
-    #         .order_by(order_exp)\
-    #         .paginate(index, PAGINATE_LIMIT)\
-    #         .naive()
-    #     return sq
-
-    # @classmethod
-    # def get_general2(cls, expressions, index, order_exp, filter_=None, extra=None):
-    #     sq = Files.select(
-    #         Files.id,
-    #         Files.filename,
-    #         Files.filepath,
-    #         Files.mime,
-    #         Files.count,
-    #         Files.size,
-    #         Files.mtime,
-    #         Files.thumb,
-    #         Files.note,
-    #         Files.set,
-    #         Names.name.alias('m_name'),
-    #         Tags.tag.alias('m_tag'),
-    #         Groups.group.alias('m_group')
-    #     )
-    #     sq = sq.join(Groups, JOIN.LEFT_OUTER)\
-    #         .switch(Files)\
-    #         .join(FileNames, JOIN.LEFT_OUTER)\
-    #         .join(Names, JOIN.LEFT_OUTER)\
-    #         .switch(Files)\
-    #         .join(FileTags, JOIN.LEFT_OUTER)\
-    #         .join(Tags, JOIN.LEFT_OUTER)
-    #     if len(expressions):
-    #         sq = sq.where(*expressions)
-    #     if filter_:
-    #         sq = sq.where(filter_)
-    #     if extra:
-    #         sq = sq.where(extra)
-    #     sq = sq.order_by(order_exp)\
-    #         .paginate(index, PAGINATE_LIMIT)\
-    #         .naive()
-    #     return sq
-
-
-    # @classmethod
-    # def get_tags(cls, value):
-    #     return (
-    #         Files.select(
-    #             fn.GROUP_CONCAT(Tags.tag).alias('m_tag'),
-    #         )
-    #         .join(FileTags)
-    #         .join(Tags)
-    #         .where(Files.id==value)
-    #         .group_by(Files.id)
-    #         .naive()
-    #     )
-
-    # @classmethod
-    # def get_col(cls, select, group, expressions):
-    #     return (
-    #         Files.select(
-    #             select
-    #         )
-    #         .join(Groups, JOIN.LEFT_OUTER)
-    #         .switch(Files)
-    #         .join(FileNames)
-    #         .join(Names, JOIN.LEFT_OUTER)
-    #         .where(*expressions)
-    #         .group_by(group)
-    #         .order_by(group)
-    #         .naive()
-    #     )
-
-# class Screenshots(BaseModel):
-#     screenshot = BlobField()
-#     file = ForeignKeyField(Files)
-
-
-# class Category(BaseModel):
-#     category = CharField()
-#     path = CharField(null=True)
-    
-
 class Tags(BaseModel):
     tag = CharField()
-    collection = CharField(default='')
-    # category = ForeignKeyField(Category)
     lastupdated = DateTimeField(default=datetime.now())
-    aliasof = CharField(default='')
 
 
-class LibTags(BaseModel):
+class Collections(BaseModel):
+    collection = CharField()
+
+
+class ColTags(BaseModel):
     tag = ForeignKeyField(Tags)
-    file = ForeignKeyField(Libs)
+    collection = ForeignKeyField(Collections)
 
     class Meta:
-        primary_key = CompositeKey('tag', 'file')
+        primary_key = CompositeKey('tag', 'collection')
 
+
+class Models(BaseModel):
+    model = CharField()
+
+
+class ModelTags(BaseModel):
+    tag = ForeignKeyField(Tags)
+    model = ForeignKeyField(Models)
+
+    class Meta:
+        primary_key = CompositeKey('tag', 'model')
 
 class VideoTags(BaseModel):
     tag = ForeignKeyField(Tags)
@@ -272,31 +86,6 @@ class ArchiveTags(BaseModel):
     class Meta:
         primary_key = CompositeKey('tag', 'file')
 
-
-# class FileNames(BaseModel):
-#     file = ForeignKeyField(Files)
-#     name = ForeignKeyField(Names)
-
-#     class Meta:
-#         indexes = (
-#         #     # create a unique on file/tag
-#         #     (('file', 'tag'), True),
-
-#             # create a unique on tag/file
-#             (('name', 'file'), True),
-#         )
-
-
-if not ArchiveTags.table_exists():
-    db.create_tables([
-        Libs,
-        Videos,
-        Archives,
-        Tags, 
-        LibTags, 
-        VideoTags, 
-        ArchiveTags, 
-    ])
 
 def stringvalidator(f):
     def wrapper(*args):
@@ -473,11 +262,11 @@ class Query:
                 Table.id,
                 Table.filename,
                 Table.filepath,
+                Table.sha,
                 # Files.mime,
-                # Files.count,
+                Table.count,
                 Table.size,
                 Table.mtime,
-                Table.thumb_path,
                 Table.note,
                 Table.set,
                 fn.GROUP_CONCAT(Tags.tag).alias('m_tag'),
@@ -487,12 +276,13 @@ class Query:
                 Table.id,
                 Table.filename,
                 Table.filepath,
+                Table.sha,
                 # Files.mime,
                 # Files.count,
                 Table.size,
                 Table.mtime,
-                Table.thumb_path,
                 Table.note,
+                Table.duration,
                 fn.GROUP_CONCAT(Tags.tag).alias('m_tag'),
             )
 
@@ -540,11 +330,11 @@ class Query:
                     Table.id,
                     Table.filename,
                     Table.filepath,
+                    Table.sha,
                     # Files.mime,
                     # Files.count,
                     Table.size,
                     Table.mtime,
-                    Table.thumb_path,
                     Table.note,
                     Table.set,
                     # fn.GROUP_CONCAT(Tags.tag).alias('m_tag'),
@@ -554,13 +344,13 @@ class Query:
                     Table.id,
                     Table.filename,
                     Table.filepath,
+                    Table.sha,
                     # Files.mime,
                     # Files.count,
                     Table.size,
                     Table.mtime,
-                    Table.thumb_path,
                     Table.note,
-                    # Table.set,
+                    Table.duration,
                     # fn.GROUP_CONCAT(Tags.tag).alias('m_tag'),
                 )
 
@@ -570,6 +360,10 @@ class Query:
                     
                 # tag_list = args['tag'].strip().split(',')
                 tag_list = args.getlist('tag')
+                # if 'onetag' in args:
+                #     sq = sq.where(Tags.tag==tag_list[0].strip().lower())\
+                #     .group_by(Table.id).having(fn.COUNT(Table.id) >= len(tag_list))
+                    
                 if len(tag_list) == 1:
                     sq = sq.where(Tags.tag==tag_list[0].strip().lower())
                 else:
@@ -603,6 +397,6 @@ class Query:
                         
 
             sq = sq.paginate(int(args.get('page', default='1')), int(args.get('per_page', default='40'))).objects()
-            print(sq.sql())
+            # print(sq.sql())
             return sq
 

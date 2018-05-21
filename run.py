@@ -3,7 +3,9 @@ from app import create_app
 from flask import render_template
 from datetime import datetime
 from humanfriendly import format_size
+from config import CONFIG
 
+CONFIG.parse()
 # from app.models import User, Role
 # from flask_migrate import Migrate
 
@@ -50,5 +52,6 @@ def add_header(r):
     r.headers['Cache-Control'] = 'public, max-age=0'
     return r
 
-app.run(debug=True)
+print(CONFIG['debug'])
+app.run(debug=CONFIG['debug'])
 # app.run()

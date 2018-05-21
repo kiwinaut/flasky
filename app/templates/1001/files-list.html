@@ -28,6 +28,11 @@
 							{%else%}
 							<a href="?{{args.encode(view='grid')}}">Grid</a>
 							{%endif%}
+							{%if args['view'] == 'macy'%}
+							<a class="active_sort" href="javascript:void(0)">macy</a>
+							{%else%}
+							<a href="?{{args.encode(view='macy')}}">macy</a>
+							{%endif%}
 						</li>
 						<li>
 							{%if media == 'archives'%}
@@ -85,6 +90,13 @@
 								<a href="?{{args.encode(sort='set')}}">set</a>
 								{%endif%}
 							</th>
+							<th>
+								{%if args['sort'] == 'count'%}
+								<a class="active_sort" href="?{{args.encode(order=args.norder())}}">count{% if args['order'] == 'asc'%}&#9650;{%else%}&#9660;{%endif%}</a>
+								{%else%}
+								<a href="?{{args.encode(sort='count')}}">count</a>
+								{%endif%}
+							</th>
 								{%endif%}
 							<th>
 								{%if args['sort'] == 'size'%}
@@ -120,6 +132,7 @@
 								<td>{{loop.index}}</td>
 								{%if media == 'archives'%}
 								<td class="set">{{item.set|d('', true)}}</td>
+								<td>{{item.count|d('0', true)}}x</td>
 								{%endif%}
 								<td class="size">{{item.size|humanfriendly}}</td>
 								<td>{{item.mtime|strf2}}</td>
@@ -129,7 +142,7 @@
 									{%endif%}
 								</td>
 								<td class="filename">
-									<a href='{{ url_for(".item", media=media, index=item.id) }}' onmouseover="return overlib('<img src=&quot;{{ url_for("tagger.static", filename=item.thumb_path|d('', true)) }}.jpg&quot; style=&quot;&quot; />');" onmouseout="return nd();javascript:void(0)">{{item.filename}}</a>
+									<a href='{{ url_for(".item", media=media, index=item.id) }}' onmouseover="return overlib('<img src=&quot;{{ url_for("tagger.static", filename=item.sha|d('', true)) }}.jpg&quot; style=&quot;&quot; />');" onmouseout="return nd();javascript:void(0)">{{item.filename}}</a>
 								</td>
 							</tr>
 						{% endfor %}
